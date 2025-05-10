@@ -1,0 +1,288 @@
+
+.dmr-self-check-wrapper {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.dmr-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.dmr-header h2 {
+    margin: 0 0 10px;
+    color: #333;
+}
+
+.dmr-progress {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+    padding: 0 20px;
+}
+
+.dmr-progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 20px;
+    opacity: 0.4;
+}
+
+.dmr-progress-step.active {
+    opacity: 1;
+}
+
+.dmr-progress-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #ddd;
+    color: #666;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.dmr-progress-step.active .dmr-progress-number {
+    background: #0073aa;
+    color: white;
+}
+
+.dmr-progress-label {
+    font-size: 14px;
+    color: #666;
+}
+
+.dmr-progress-step.active .dmr-progress-label {
+    color: #0073aa;
+    font-weight: 600;
+}
+
+.dmr-form {
+    background: white;
+    padding: 30px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.dmr-step-content h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+.dmr-instructions {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.dmr-scale-legend {
+    display: flex;
+    justify-content: space-around;
+    padding: 15px;
+    background: #f0f0f0;
+    border-radius: 4px;
+    margin-bottom: 30px;
+    font-size: 14px;
+}
+
+.dmr-question {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #fafafa;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+}
+
+.dmr-question legend {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.dmr-options {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.dmr-radio-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+}
+
+.dmr-radio-label input[type="radio"] {
+    margin-bottom: 5px;
+}
+
+.dmr-radio-text {
+    font-size: 18px;
+    font-weight: bold;
+    color: #0073aa;
+}
+
+.dmr-field {
+    margin-bottom: 20px;
+}
+
+.dmr-field label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #333;
+}
+
+.dmr-field input[type="text"],
+.dmr-field input[type="email"],
+.dmr-field input[type="tel"],
+.dmr-field textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.dmr-field textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.dmr-checkbox-field label {
+    display: flex;
+    align-items: center;
+    font-weight: normal;
+}
+
+.dmr-checkbox-field input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.required {
+    color: #dc3232;
+}
+
+.dmr-disclaimer {
+    padding: 15px;
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 4px;
+    margin: 20px 0;
+    font-size: 14px;
+}
+
+.dmr-nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+    gap: 10px;
+}
+
+.dmr-btn {
+    padding: 12px 30px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.dmr-btn-primary {
+    background: #0073aa;
+    color: white;
+}
+
+.dmr-btn-primary:hover {
+    background: #005a87;
+}
+
+.dmr-btn-secondary {
+    background: #ddd;
+    color: #333;
+}
+
+.dmr-btn-secondary:hover {
+    background: #ccc;
+}
+
+/* Results Page */
+.dmr-results-wrapper {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.dmr-results-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.dmr-results-score {
+    text-align: center;
+    padding: 40px;
+    background: white;
+    border: 2px solid #0073aa;
+    border-radius: 8px;
+    margin-bottom: 30px;
+}
+
+.dmr-score-circle {
+    margin-bottom: 20px;
+}
+
+.dmr-score-number {
+    font-size: 72px;
+    font-weight: bold;
+    color: #0073aa;
+}
+
+.dmr-score-total {
+    font-size: 24px;
+    color: #666;
+}
+
+.dmr-score-category {
+    display: inline-block;
+    padding: 10px 30px;
+    border-radius: 25px;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.dmr-category-low.dmr-score-category {
+    background: #46b450;
+}
+
+.dmr-category-moderate.dmr-score-category {
+    background: #ffb900;
+}
+
+.dmr-category-high.dmr-score-category {
+    background: #dc3232;
+}
+
+.dmr-results-recommendation {
+    padding: 30px;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.dmr-results-recommendation h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+.dmr-results-footer {
+    text-align: center;
+    color: #666;
+    margin-top: 30px;
+}
