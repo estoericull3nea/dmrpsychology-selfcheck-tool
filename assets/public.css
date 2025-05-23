@@ -48,8 +48,9 @@
 }
 
 .dmr-progress-step.active .dmr-progress-number {
-    background: #0073aa;
+    background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
     color: white;
+    box-shadow: 0 2px 8px rgba(46, 125, 50, 0.3);
 }
 
 .dmr-progress-label {
@@ -58,7 +59,7 @@
 }
 
 .dmr-progress-step.active .dmr-progress-label {
-    color: #0073aa;
+    color: #2e7d32;
     font-weight: 600;
 }
 
@@ -83,31 +84,62 @@
 .dmr-scale-legend {
     display: flex;
     justify-content: space-around;
-    padding: 15px;
-    background: #f0f0f0;
-    border-radius: 4px;
-    margin-bottom: 30px;
+    padding: 20px;
+    background: linear-gradient(135deg, #e8f5e9 0%, #f1f8f4 100%);
+    border-radius: 12px;
+    margin-bottom: 35px;
     font-size: 14px;
+    border: 1px solid rgba(46, 125, 50, 0.2);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.dmr-scale-legend span {
+    color: #2e7d32;
+}
+
+.dmr-scale-legend strong {
+    font-size: 16px;
+    margin-right: 5px;
 }
 
 .dmr-question {
-    margin-bottom: 30px;
-    padding: 20px;
-    background: #fafafa;
-    border: 1px solid #e0e0e0;
-    border-radius: 4px;
+    margin-bottom: 25px;
+    padding: 30px;
+    background: #ffffff;
+    border: 2px solid #e8f5e9;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.dmr-question:hover {
+    box-shadow: 0 6px 20px rgba(46, 125, 50, 0.15);
+    transform: translateY(-3px);
+    border-color: #2e7d32;
 }
 
 .dmr-question legend {
     font-weight: 600;
-    color: #333;
-    margin-bottom: 15px;
+    color: #1a1a1a;
+    margin-bottom: 25px;
+    font-size: 1.1rem;
+    line-height: 1.7;
+    padding: 0;
+    width: 100%;
+    display: block;
+    border-bottom: 2px solid #e8f5e9;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .dmr-options {
     display: flex;
-    gap: 15px;
+    gap: 20px;
     justify-content: center;
+    align-items: center;
+    padding: 20px 0 10px 0;
+    flex-wrap: wrap;
 }
 
 .dmr-radio-label {
@@ -115,16 +147,50 @@
     flex-direction: column;
     align-items: center;
     cursor: pointer;
+    padding: 12px 15px;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+    min-width: 60px;
+    background: #f8f9fa;
+    border: 2px solid transparent;
+}
+
+.dmr-radio-label:hover {
+    background: rgba(46, 125, 50, 0.08);
+    border-color: rgba(46, 125, 50, 0.3);
+    transform: scale(1.05);
+}
+
+.dmr-radio-label.dmr-radio-checked {
+    background: rgba(46, 125, 50, 0.12);
+    border-color: #2e7d32;
+    box-shadow: 0 2px 8px rgba(46, 125, 50, 0.2);
+}
+
+.dmr-radio-label:has(input[type="radio"]:checked) {
+    background: rgba(46, 125, 50, 0.12);
+    border-color: #2e7d32;
+    box-shadow: 0 2px 8px rgba(46, 125, 50, 0.2);
 }
 
 .dmr-radio-label input[type="radio"] {
-    margin-bottom: 5px;
+    margin-bottom: 8px;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.dmr-radio-label input[type="radio"]:checked + .dmr-radio-text {
+    color: #1b5e20;
+    font-weight: 900;
+    transform: scale(1.1);
 }
 
 .dmr-radio-text {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: bold;
-    color: #0073aa;
+    color: #2e7d32;
+    transition: all 0.2s ease;
 }
 
 .dmr-field {
@@ -194,12 +260,15 @@
 }
 
 .dmr-btn-primary {
-    background: #0073aa;
+    background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
     color: white;
+    box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
 }
 
 .dmr-btn-primary:hover {
-    background: #005a87;
+    background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
+    box-shadow: 0 6px 16px rgba(46, 125, 50, 0.4);
+    transform: translateY(-2px);
 }
 
 .dmr-btn-secondary {
@@ -227,9 +296,10 @@
     text-align: center;
     padding: 40px;
     background: white;
-    border: 2px solid #0073aa;
-    border-radius: 8px;
+    border: 2px solid #2e7d32;
+    border-radius: 12px;
     margin-bottom: 30px;
+    box-shadow: 0 4px 12px rgba(46, 125, 50, 0.15);
 }
 
 .dmr-score-circle {
@@ -239,7 +309,7 @@
 .dmr-score-number {
     font-size: 72px;
     font-weight: bold;
-    color: #0073aa;
+    color: #2e7d32;
 }
 
 .dmr-score-total {
@@ -285,4 +355,86 @@
     text-align: center;
     color: #666;
     margin-top: 30px;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .dmr-scale-legend {
+        flex-wrap: wrap;
+        gap: 10px;
+        font-size: 12px;
+    }
+    
+    .dmr-scale-legend span {
+        flex: 0 0 45%;
+    }
+    
+    .dmr-question {
+        padding: 20px;
+    }
+    
+    .dmr-options {
+        gap: 12px;
+    }
+    
+    .dmr-radio-label {
+        padding: 8px;
+    }
+    
+    .dmr-radio-text {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .dmr-self-check-wrapper {
+        padding: 10px;
+    }
+    
+    .dmr-form {
+        padding: 20px 15px;
+    }
+    
+    .dmr-question {
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .dmr-question legend {
+        font-size: 0.95rem;
+    }
+    
+    .dmr-scale-legend {
+        font-size: 11px;
+        padding: 15px;
+    }
+    
+    .dmr-scale-legend strong {
+        font-size: 14px;
+    }
+    
+    .dmr-options {
+        gap: 8px;
+    }
+    
+    .dmr-radio-label {
+        padding: 6px;
+    }
+    
+    .dmr-radio-label input[type="radio"] {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .dmr-radio-text {
+        font-size: 16px;
+    }
+    
+    .dmr-nav-buttons {
+        flex-direction: column;
+    }
+    
+    .dmr-btn {
+        width: 100%;
+    }
 }

@@ -139,4 +139,35 @@
         reviewContent.innerHTML = html;
     }
     
+    // Add visual feedback for selected radio buttons
+    function initRadioButtonStyling() {
+        var radioButtons = document.querySelectorAll('.dmr-radio-label input[type="radio"]');
+        radioButtons.forEach(function(radio) {
+            radio.addEventListener('change', function() {
+                // Remove checked class from all labels in the same question
+                var question = this.closest('.dmr-question');
+                if (question) {
+                    var allLabels = question.querySelectorAll('.dmr-radio-label');
+                    allLabels.forEach(function(label) {
+                        label.classList.remove('dmr-radio-checked');
+                    });
+                    // Add checked class to the selected label
+                    this.closest('.dmr-radio-label').classList.add('dmr-radio-checked');
+                }
+            });
+            
+            // Set initial state
+            if (radio.checked) {
+                radio.closest('.dmr-radio-label').classList.add('dmr-radio-checked');
+            }
+        });
+    }
+    
+    // Initialize on page load
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initRadioButtonStyling);
+    } else {
+        initRadioButtonStyling();
+    }
+    
 })();
