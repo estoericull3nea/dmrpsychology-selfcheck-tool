@@ -50,9 +50,14 @@
                 }
             }
             
-            // Build review content
+            // Build review content before navigating
             buildReviewContent();
             return true;
+        }
+        
+        if (currentStep === 3) {
+            // Build review content when loading step 3
+            buildReviewContent();
         }
         
         return true;
@@ -63,9 +68,96 @@
     }
     
     function navigateToStep(step) {
-        var url = new URL(window.location.href);
-        url.searchParams.set('dmr_step', step);
-        window.location.href = url.toString();
+        if (typeof dmrAjax === 'undefined') {
+            // Fallback to page reload if AJAX not available
+            var url = new URL(window.location.href);
+            url.searchParams.set('dmr_step', step);
+            window.location.href = url.toString();
+            return;
+        }
+        
+        // Show loading state
+        var form = document.getElementById('dmr-form');
+        var stepContent = form.querySelector('.dmr-step-content');
+        if (stepContent) {
+            stepContent.style.opacity = '0.5';
+            stepContent.style.pointerEvents = 'none';
+        }
+        
+        // Make AJAX request
+        jQuery.ajax({
+            url: dmrAjax.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'dmr_get_step',
+                step: step,
+                nonce: dmrAjax.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Update step content with fade effect
+                    if (stepContent) {
+                        stepContent.style.transition = 'opacity 0.3s ease';
+                        setTimeout(function() {
+                            stepContent.innerHTML = response.data.content;
+                            stepContent.style.opacity = '1';
+                            stepContent.style.pointerEvents = 'auto';
+                        }, 150);
+                    }
+                    
+                    // Update hidden step field
+                    var stepField = document.getElementById('dmr_current_step');
+                    if (stepField) {
+                        stepField.value = response.data.step;
+                    }
+                    
+                    // Update progress indicators
+                    updateProgressIndicators(response.data.step);
+                    
+                    // Re-initialize radio button styling
+                    setTimeout(function() {
+                        initRadioButtonStyling();
+                        
+                        // If step 3, build review content
+                        if (response.data.step === 3) {
+                            buildReviewContent();
+                        }
+                    }, 100);
+                    
+                    // Scroll to top of form
+                    setTimeout(function() {
+                        if (form) {
+                            form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                    }, 200);
+                } else {
+                    alert(response.data.message || 'An error occurred. Please try again.');
+                    if (stepContent) {
+                        stepContent.style.opacity = '1';
+                        stepContent.style.pointerEvents = 'auto';
+                    }
+                }
+            },
+            error: function() {
+                alert('An error occurred while loading the form. Please refresh the page.');
+                if (stepContent) {
+                    stepContent.style.opacity = '1';
+                    stepContent.style.pointerEvents = 'auto';
+                }
+            }
+        });
+    }
+    
+    function updateProgressIndicators(step) {
+        var progressSteps = document.querySelectorAll('.dmr-progress-step');
+        progressSteps.forEach(function(progressStep, index) {
+            var stepNum = index + 1;
+            if (stepNum <= step) {
+                progressStep.classList.add('active');
+            } else {
+                progressStep.classList.remove('active');
+            }
+        });
     }
     
     function buildReviewContent() {
