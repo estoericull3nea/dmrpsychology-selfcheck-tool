@@ -336,6 +336,15 @@ class DMR_Frontend_Shortcode
             'questions' => $config['questions']
         ));
 
+        // Send email to customer
+        $mailer->send_customer_notification(array(
+            'full_name' => $full_name,
+            'email' => $email,
+            'score' => $score,
+            'category' => $category_label,
+            'recommendation' => $recommendation
+        ));
+
         // Store results in session for display
         if (!session_id()) {
             session_start();
@@ -514,6 +523,15 @@ class DMR_Frontend_Shortcode
             'category' => $category_label,
             'recommendation' => $recommendation,
             'questions' => $config['questions']
+        ));
+
+        // Send email to customer
+        $mailer->send_customer_notification(array(
+            'full_name' => $full_name,
+            'email' => $email,
+            'score' => $score,
+            'category' => $category_label,
+            'recommendation' => $recommendation
         ));
 
         // Return success with results data
