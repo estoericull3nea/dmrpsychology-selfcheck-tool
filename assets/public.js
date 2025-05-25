@@ -2,6 +2,17 @@
 (function() {
     'use strict';
     
+    // Initialize form submission handler
+    function initFormSubmission() {
+        var form = document.getElementById('dmr-form');
+        if (!form) return;
+        
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitForm();
+        });
+    }
+    
     // Navigation functions
     window.dmrNextStep = function(step) {
         if (validateCurrentStep()) {
@@ -255,11 +266,148 @@
         });
     }
     
+    // Initialize form submission handler
+    function initFormSubmission() {
+        var form = document.getElementById('dmr-form');
+        if (!form) return;
+        
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitForm();
+        });
+    }
+    
+    // Submit form via AJAX
+    function submitForm() {
+        if (typeof dmrAjax === 'undefined') {
+            // Fallback to normal form submission
+            document.getElementById('dmr-form').submit();
+            return;
+        }
+        
+        var form = document.getElementById('dmr-form');
+        if (!form) return;
+        
+        // Validate consent checkbox
+        var consent = form.querySelector('input[name="consent"]');
+        if (!consent || !consent.checked) {
+            alert('You must agree to the consent statement before submitting.');
+            if (consent) consent.focus();
+            return;
+        }
+        
+        // Show loading state
+        showLoadingState();
+        
+        // Collect form data
+        var formData = new FormData(form);
+        formData.append('action', 'dmr_submit_form');
+        formData.append('nonce', dmrAjax.nonce);
+        
+        // Get answers
+        var answers = {};
+        var answerInputs = form.querySelectorAll('input[name^="answers["]:checked');
+        answerInputs.forEach(function(input) {
+            var match = input.name.match(/\[(\d+)\]/);
+            if (match) {
+                answers[match[1]] = input.value;
+            }
+        });
+        
+        // Add answers to form data
+        for (var key in answers) {
+            formData.append('answers[' + key + ']', answers[key]);
+        }
+        
+        // Make AJAX request
+        jQuery.ajax({
+            url: dmrAjax.ajaxurl,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.success) {
+                    // Show success message briefly
+                    showSuccessMessage();
+                    
+                    // Redirect to results page
+                    setTimeout(function() {
+                        window.location.href = response.data.redirect_url;
+                    }, 1500);
+                } else {
+                    hideLoadingState();
+                    alert(response.data.message || 'An error occurred. Please try again.');
+                }
+            },
+            error: function() {
+                hideLoadingState();
+                alert('An error occurred while submitting. Please try again.');
+            }
+        });
+    }
+    
+    function showLoadingState() {
+        var form = document.getElementById('dmr-form');
+        if (!form) return;
+        
+        // Disable form
+        form.style.pointerEvents = 'none';
+        form.style.opacity = '0.6';
+        
+        // Create loading overlay
+        var loadingOverlay = document.createElement('div');
+        loadingOverlay.id = 'dmr-submit-loading';
+        loadingOverlay.className = 'dmr-submit-loading';
+        loadingOverlay.innerHTML = '<div class="dmr-loading-spinner"></div><p class="dmr-loading-text">Submitting...</p>';
+        form.appendChild(loadingOverlay);
+        
+        // Disable submit button
+        var submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="dmr-btn-loading">Submitting...</span>';
+        }
+    }
+    
+    function hideLoadingState() {
+        var form = document.getElementById('dmr-form');
+        if (!form) return;
+        
+        form.style.pointerEvents = 'auto';
+        form.style.opacity = '1';
+        
+        var loadingOverlay = document.getElementById('dmr-submit-loading');
+        if (loadingOverlay) {
+            loadingOverlay.remove();
+        }
+        
+        var submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Submit';
+        }
+    }
+    
+    function showSuccessMessage() {
+        var form = document.getElementById('dmr-form');
+        if (!form) return;
+        
+        var successMsg = document.createElement('div');
+        successMsg.className = 'dmr-submit-success';
+        successMsg.innerHTML = '<p>✓ Submission successful! Redirecting to results...</p>';
+        form.appendChild(successMsg);
+    }
+    
     // Initialize on page load
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initRadioButtonStyling);
+        document.addEventListener('DOMContentLoaded', function() {
+            initRadioButtonStyling();
+            initFormSubmission();
+        });
     } else {
         initRadioButtonStyling();
+        initFormSubmission();
     }
     
 })();

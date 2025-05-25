@@ -14,6 +14,10 @@ class DMR_Frontend_Shortcode
         add_action('admin_post_nopriv_dmr_submit_check', array($this, 'handle_submission'));
         add_action('wp_ajax_dmr_get_step', array($this, 'ajax_get_step'));
         add_action('wp_ajax_nopriv_dmr_get_step', array($this, 'ajax_get_step'));
+        add_action('wp_ajax_dmr_submit_form', array($this, 'ajax_submit_form'));
+        add_action('wp_ajax_nopriv_dmr_submit_form', array($this, 'ajax_submit_form'));
+        add_action('wp_ajax_dmr_store_results', array($this, 'ajax_store_results'));
+        add_action('wp_ajax_nopriv_dmr_store_results', array($this, 'ajax_store_results'));
     }
 
     public function render_shortcode($atts)
@@ -426,6 +430,114 @@ class DMR_Frontend_Shortcode
         wp_send_json_success(array(
             'content' => $content,
             'step' => $step
+        ));
+    }
+
+    /**
+     * AJAX handler for form submission
+     */
+    public function ajax_submit_form()
+    {
+        // Verify nonce
+        if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'dmr_ajax_nonce')) {
+            wp_send_json_error(array('message' => 'Security check failed.'));
+            return;
+        }
+
+        $config = get_option('dmr_self_check_config', array());
+
+        // Validate and sanitize inputs
+        $answers = array();
+        if (isset($_POST['answers']) && is_array($_POST['answers'])) {
+            foreach ($_POST['answers'] as $index => $value) {
+                $answers[$index] = intval($value);
+            }
+        }
+
+        if (count($answers) !== 10) {
+            wp_send_json_error(array('message' => 'Please answer all questions.'));
+            return;
+        }
+
+        $full_name = sanitize_text_field($_POST['full_name'] ?? '');
+        $email = sanitize_email($_POST['email'] ?? '');
+        $phone = sanitize_text_field($_POST['phone'] ?? '');
+        $notes = sanitize_textarea_field($_POST['notes'] ?? '');
+        $newsletter_opt_in = isset($_POST['newsletter_opt_in']);
+        $consent = isset($_POST['consent']);
+
+        if (empty($full_name) || empty($email)) {
+            wp_send_json_error(array('message' => 'Name and email are required.'));
+            return;
+        }
+
+        if (!$consent) {
+            wp_send_json_error(array('message' => 'You must agree to the consent statement.'));
+            return;
+        }
+
+        // Calculate score
+        $score = $this->calculate_score($answers, $config['reversed_items']);
+
+        // Determine category
+        $category_data = $this->get_category($score, $config['ranges']);
+        $category = $category_data['key'];
+        $category_label = $category_data['label'];
+        $recommendation = $config['recommendations'][$category] ?? '';
+
+        // Store in database
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'dmr_self_checks';
+
+        $insert_result = $wpdb->insert(
+            $table_name,
+            array(
+                'user_id' => get_current_user_id() ?: null,
+                'tool_type' => 'stress_check',
+                'quiz_answers' => json_encode($answers),
+                'full_name' => $full_name,
+                'email' => $email,
+                'phone' => $phone,
+                'notes' => $notes,
+                'score' => $score,
+                'category' => $category,
+                'recommendation' => $recommendation,
+                'status' => 'submitted',
+                'created_at' => current_time('mysql'),
+                'updated_at' => current_time('mysql')
+            ),
+            array('%d', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s')
+        );
+
+        if ($insert_result === false) {
+            wp_send_json_error(array('message' => 'Failed to save submission. Please try again.'));
+            return;
+        }
+
+        // Send email to admin
+        $mailer = new DMR_Mailer();
+        $mailer->send_admin_notification(array(
+            'full_name' => $full_name,
+            'email' => $email,
+            'phone' => $phone,
+            'notes' => $notes,
+            'answers' => $answers,
+            'score' => $score,
+            'category' => $category_label,
+            'recommendation' => $recommendation,
+            'newsletter_opt_in' => $newsletter_opt_in,
+            'questions' => $config['questions']
+        ));
+
+        // Return success with results data
+        wp_send_json_success(array(
+            'message' => 'Submission successful!',
+            'redirect_url' => add_query_arg('dmr_result', 'success', wp_get_referer() ?: home_url()),
+            'results' => array(
+                'score' => $score,
+                'category' => $category_label,
+                'recommendation' => $recommendation
+            )
         ));
     }
 }
