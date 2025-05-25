@@ -149,8 +149,6 @@ class DMR_Mailer
                                 </tr>
                             <?php endif; ?>
                             <tr>
-                                <td><strong>Newsletter Opt-In:</strong></td>
-                                <td><?php echo $data['newsletter_opt_in'] ? 'Yes' : 'No'; ?></td>
                             </tr>
                         </table>
                     </div>

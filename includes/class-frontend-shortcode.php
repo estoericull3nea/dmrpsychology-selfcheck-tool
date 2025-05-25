@@ -169,15 +169,6 @@ class DMR_Frontend_Shortcode
                 </div>
             <?php endif; ?>
 
-            <?php if ($fields['newsletter']['enabled'] ?? true): ?>
-                <div class="dmr-field dmr-checkbox-field">
-                    <label>
-                        <input type="checkbox" name="newsletter_opt_in" value="1">
-                        Subscribe to our wellness newsletter
-                    </label>
-                </div>
-            <?php endif; ?>
-
             <div class="dmr-nav-buttons">
                 <button type="button" class="dmr-btn dmr-btn-secondary" onclick="dmrPrevStep(1)">Previous</button>
                 <button type="button" class="dmr-btn dmr-btn-primary" onclick="dmrNextStep(3)">Review</button>
@@ -288,7 +279,6 @@ class DMR_Frontend_Shortcode
         $email = sanitize_email($_POST['email'] ?? '');
         $phone = sanitize_text_field($_POST['phone'] ?? '');
         $notes = sanitize_textarea_field($_POST['notes'] ?? '');
-        $newsletter_opt_in = isset($_POST['newsletter_opt_in']);
         $consent = isset($_POST['consent']);
 
         if (empty($full_name) || empty($email)) {
@@ -343,7 +333,6 @@ class DMR_Frontend_Shortcode
             'score' => $score,
             'category' => $category_label,
             'recommendation' => $recommendation,
-            'newsletter_opt_in' => $newsletter_opt_in,
             'questions' => $config['questions']
         ));
 
@@ -463,7 +452,6 @@ class DMR_Frontend_Shortcode
         $email = sanitize_email($_POST['email'] ?? '');
         $phone = sanitize_text_field($_POST['phone'] ?? '');
         $notes = sanitize_textarea_field($_POST['notes'] ?? '');
-        $newsletter_opt_in = isset($_POST['newsletter_opt_in']);
         $consent = isset($_POST['consent']);
 
         if (empty($full_name) || empty($email)) {
@@ -525,7 +513,6 @@ class DMR_Frontend_Shortcode
             'score' => $score,
             'category' => $category_label,
             'recommendation' => $recommendation,
-            'newsletter_opt_in' => $newsletter_opt_in,
             'questions' => $config['questions']
         ));
 
