@@ -150,17 +150,7 @@ class DMR_Mailer
                     </div>
 
                     <div class="section">
-                        <h2>Your Results</h2>
-                        <div class="score-box">
-                            <div class="score-number"><?php echo esc_html($data['score']); ?>/40</div>
-                            <div class="category"><?php echo esc_html($data['category']); ?></div>
-                        </div>
-                        <p style="margin-top: 20px;"><strong>Recommendation:</strong></p>
-                        <p><?php echo esc_html($data['recommendation']); ?></p>
-                    </div>
-
-                    <div class="section">
-                        <p style="font-size: 15px; line-height: 1.8;">Our team has received your assessment and may reach out to
+                        <p style="font-size: 15px; line-height: 1.8;">Our team has received your assessment and will review your responses. We may reach out to
                             you at the contact information you provided. If you have any questions or would like to schedule a
                             consultation, please don't hesitate to contact us.</p>
                     </div>

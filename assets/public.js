@@ -410,15 +410,7 @@
         html += '</div>';
         html += '</div>';
         
-        // Score Section
-        html += '<div class="dmr-review-section">';
-        html += '<h4>Your Results</h4>';
-        html += '<div class="dmr-review-score-box">';
-        html += '<div class="dmr-review-score-number">' + score + '</div>';
-        html += '<div class="dmr-review-score-total">/ 40</div>';
-        html += '<div class="dmr-review-category dmr-category-' + categoryClass + '">' + category + '</div>';
-        html += '</div>';
-        html += '</div>';
+        // Results section removed - only shown to admin
         
         html += '</div>';
         
@@ -482,25 +474,84 @@
         // Show loading state
         showLoadingState();
         
+        // Save form data one last time before submission
+        saveFormData();
+        
         // Collect form data
         var formData = new FormData(form);
         formData.append('action', 'dmr_submit_form');
         formData.append('nonce', dmrAjax.nonce);
         
-        // Get answers
+        // Get answers - try from DOM first, then use stored data
         var answers = {};
         var answerInputs = form.querySelectorAll('input[name^="answers["]:checked');
-        answerInputs.forEach(function(input) {
-            var match = input.name.match(/\[(\d+)\]/);
-            if (match) {
-                answers[match[1]] = input.value;
-            }
-        });
+        
+        if (answerInputs.length > 0) {
+            // Answers found in DOM (step 1 or 2)
+            answerInputs.forEach(function(input) {
+                var match = input.name.match(/\[(\d+)\]/);
+                if (match) {
+                    answers[match[1]] = input.value;
+                }
+            });
+        } else {
+            // No answers in DOM (step 3), use stored data
+            console.log('No answers in DOM, using stored data:', storedFormData.answers);
+            answers = storedFormData.answers;
+        }
+        
+        // Validate we have answers
+        if (Object.keys(answers).length === 0) {
+            hideLoadingState();
+            alert('Please answer all questions before submitting.');
+            return;
+        }
+        
+        // Validate we have all 10 answers
+        if (Object.keys(answers).length < 10) {
+            hideLoadingState();
+            alert('Please answer all 10 questions before submitting.');
+            return;
+        }
         
         // Add answers to form data
         for (var key in answers) {
             formData.append('answers[' + key + ']', answers[key]);
         }
+        
+        // Get personal info - try from DOM first, then use stored data
+        var fullNameField = form.querySelector('#full_name');
+        var emailField = form.querySelector('#email');
+        var phoneField = form.querySelector('#phone');
+        var notesField = form.querySelector('#notes');
+        
+        var fullName = (fullNameField && fullNameField.value) ? fullNameField.value : storedFormData.fullName;
+        var email = (emailField && emailField.value) ? emailField.value : storedFormData.email;
+        var phone = (phoneField && phoneField.value) ? phoneField.value : storedFormData.phone;
+        var notes = (notesField && notesField.value) ? notesField.value : storedFormData.notes;
+        
+        // Validate required fields
+        if (!fullName || !email) {
+            hideLoadingState();
+            alert('Name and email are required.');
+            return;
+        }
+        
+        // Add personal info to form data (override any existing values)
+        formData.set('full_name', fullName);
+        formData.set('email', email);
+        if (phone) {
+            formData.set('phone', phone);
+        }
+        if (notes) {
+            formData.set('notes', notes);
+        }
+        
+        console.log('Submitting with:', {
+            answers: Object.keys(answers).length,
+            fullName: fullName,
+            email: email
+        });
         
         // Make AJAX request
         jQuery.ajax({

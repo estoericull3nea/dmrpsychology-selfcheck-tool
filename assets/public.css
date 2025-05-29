@@ -119,14 +119,7 @@
     border: 2px solid #e8f5e9;
     border-radius: 16px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
     position: relative;
-}
-
-.dmr-question:hover {
-    box-shadow: 0 6px 20px rgba(46, 125, 50, 0.15);
-    transform: translateY(-3px);
-    border-color: #2e7d32;
 }
 
 .dmr-question legend {
@@ -159,16 +152,9 @@
     cursor: pointer;
     padding: 12px 15px;
     border-radius: 10px;
-    transition: all 0.2s ease;
     min-width: 60px;
     background: #f8f9fa;
     border: 2px solid transparent;
-}
-
-.dmr-radio-label:hover {
-    background: rgba(46, 125, 50, 0.08);
-    border-color: rgba(46, 125, 50, 0.3);
-    transform: scale(1.05);
 }
 
 .dmr-radio-label.dmr-radio-checked {
@@ -200,7 +186,6 @@
     font-size: 20px;
     font-weight: bold;
     color: #2e7d32;
-    transition: all 0.2s ease;
 }
 
 .dmr-field {
@@ -421,7 +406,6 @@
     padding: 20px;
     background: #f8f9fa;
     border-radius: 10px;
-    border-left: 4px solid #2e7d32;
     transition: all 0.2s ease;
 }
 
