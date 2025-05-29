@@ -367,6 +367,162 @@
     margin-top: 30px;
 }
 
+/* Review Section Styles */
+.dmr-review-summary {
+    margin-bottom: 30px;
+}
+
+.dmr-review-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.dmr-review-section h4 {
+    color: #2e7d32;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0 0 20px 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e8f5e9;
+}
+
+.dmr-review-info {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.dmr-review-info p {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #333;
+}
+
+.dmr-review-info strong {
+    color: #1a1a1a;
+    min-width: 140px;
+    display: inline-block;
+}
+
+.dmr-review-questions {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.dmr-review-question-item {
+    display: flex;
+    gap: 15px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border-left: 4px solid #2e7d32;
+    transition: all 0.2s ease;
+}
+
+.dmr-review-question-item:hover {
+    background: #f0f4f1;
+    box-shadow: 0 2px 6px rgba(46, 125, 50, 0.1);
+}
+
+.dmr-review-question-number {
+    font-weight: 700;
+    color: #2e7d32;
+    font-size: 1.1rem;
+    min-width: 30px;
+    flex-shrink: 0;
+}
+
+.dmr-review-question-content {
+    flex: 1;
+}
+
+.dmr-review-question-text {
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 10px;
+    line-height: 1.6;
+    font-size: 1rem;
+}
+
+.dmr-review-answer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.dmr-review-answer-label {
+    font-weight: 600;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.dmr-review-answer-value {
+    color: #2e7d32;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 4px 12px;
+    background: rgba(46, 125, 50, 0.1);
+    border-radius: 6px;
+}
+
+.dmr-review-score-box {
+    text-align: center;
+    padding: 30px;
+    background: linear-gradient(135deg, #e8f5e9 0%, #f1f8f4 100%);
+    border-radius: 12px;
+    border: 2px solid #2e7d32;
+}
+
+.dmr-review-score-number {
+    font-size: 56px;
+    font-weight: 800;
+    color: #2e7d32;
+    line-height: 1;
+    margin-bottom: 5px;
+}
+
+.dmr-review-score-total {
+    font-size: 24px;
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.dmr-review-category {
+    display: inline-block;
+    padding: 10px 25px;
+    border-radius: 25px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-top: 10px;
+}
+
+.dmr-category-low {
+    background: #46b450;
+}
+
+.dmr-category-moderate {
+    background: #ffb900;
+}
+
+.dmr-category-high {
+    background: #dc3232;
+}
+
+.dmr-loading {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    padding: 20px;
+}
+
 /* Loading State Styles */
 .dmr-submit-loading {
     position: absolute;
@@ -508,5 +664,43 @@
     
     .dmr-btn {
         width: 100%;
+    }
+    
+    /* Review Section Mobile */
+    .dmr-review-section {
+        padding: 15px;
+    }
+    
+    .dmr-review-section h4 {
+        font-size: 1.1rem;
+    }
+    
+    .dmr-review-question-item {
+        flex-direction: column;
+        padding: 15px;
+        gap: 10px;
+    }
+    
+    .dmr-review-question-number {
+        min-width: auto;
+    }
+    
+    .dmr-review-answer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    
+    .dmr-review-score-number {
+        font-size: 42px;
+    }
+    
+    .dmr-review-score-total {
+        font-size: 20px;
+    }
+    
+    .dmr-review-category {
+        font-size: 1rem;
+        padding: 8px 20px;
     }
 }

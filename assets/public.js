@@ -15,6 +15,11 @@
     
     // Navigation functions
     window.dmrNextStep = function(step) {
+        console.log('dmrNextStep called for step', step);
+        
+        // ALWAYS save form data before validation
+        saveFormData();
+        
         if (validateCurrentStep()) {
             updateStepInForm(step);
             navigateToStep(step);
@@ -22,6 +27,11 @@
     };
     
     window.dmrPrevStep = function(step) {
+        console.log('dmrPrevStep called for step', step);
+        
+        // Save form data before navigating back
+        saveFormData();
+        
         updateStepInForm(step);
         navigateToStep(step);
     };
@@ -87,6 +97,9 @@
             return;
         }
         
+        // Save current form data before navigating
+        saveFormData();
+        
         // Show loading state
         var form = document.getElementById('dmr-form');
         var stepContent = form.querySelector('.dmr-step-content');
@@ -113,6 +126,25 @@
                             stepContent.innerHTML = response.data.content;
                             stepContent.style.opacity = '1';
                             stepContent.style.pointerEvents = 'auto';
+                            
+                            // After content is loaded, restore form data and initialize
+                            setTimeout(function() {
+                                // Restore form data AFTER HTML is inserted
+                                restoreFormData();
+                                
+                                // Re-initialize radio button styling
+                                initRadioButtonStyling();
+                                
+                                // Store questions if step 1
+                                if (response.data.step === 1) {
+                                    storeQuestions();
+                                }
+                                
+                                // If step 3, build review content
+                                if (response.data.step === 3) {
+                                    buildReviewContent();
+                                }
+                            }, 50);
                         }, 150);
                     }
                     
@@ -125,22 +157,12 @@
                     // Update progress indicators
                     updateProgressIndicators(response.data.step);
                     
-                    // Re-initialize radio button styling
-                    setTimeout(function() {
-                        initRadioButtonStyling();
-                        
-                        // If step 3, build review content
-                        if (response.data.step === 3) {
-                            buildReviewContent();
-                        }
-                    }, 100);
-                    
                     // Scroll to top of form
                     setTimeout(function() {
                         if (form) {
                             form.scrollIntoView({ behavior: 'smooth', block: 'start' });
                         }
-                    }, 200);
+                    }, 250);
                 } else {
                     alert(response.data.message || 'An error occurred. Please try again.');
                     if (stepContent) {
@@ -171,21 +193,134 @@
         });
     }
     
-    function buildReviewContent() {
-        // Get answers
-        var answers = {};
+    // Store questions and form data
+    var storedQuestions = [];
+    var storedFormData = {
+        answers: {},
+        fullName: '',
+        email: '',
+        phone: '',
+        notes: ''
+    };
+    
+    function storeQuestions() {
+        storedQuestions = [];
+        var questionFieldsets = document.querySelectorAll('.dmr-question');
+        questionFieldsets.forEach(function(fieldset) {
+            var legend = fieldset.querySelector('legend');
+            if (legend) {
+                var questionText = legend.textContent.replace(/^\d+\.\s*/, ''); // Remove question number
+                storedQuestions.push(questionText);
+            }
+        });
+    }
+    
+    function saveFormData() {
+        console.log('saveFormData() called');
+        
+        // Save answers - Don't reset, just update
         var answerInputs = document.querySelectorAll('input[name^="answers["]:checked');
+        console.log('Found checked inputs:', answerInputs.length);
+        
         answerInputs.forEach(function(input) {
             var match = input.name.match(/\[(\d+)\]/);
             if (match) {
-                answers[match[1]] = parseInt(input.value);
+                storedFormData.answers[match[1]] = input.value;
+                console.log('Saved answer [' + match[1] + '] = ' + input.value);
             }
         });
         
-        // Get personal info
-        var fullName = document.getElementById('full_name') ? document.getElementById('full_name').value : '';
-        var email = document.getElementById('email') ? document.getElementById('email').value : '';
-        var phone = document.getElementById('phone') ? document.getElementById('phone').value : '';
+        console.log('Total stored answers:', Object.keys(storedFormData.answers).length);
+        
+        // Save personal info
+        var fullNameField = document.getElementById('full_name');
+        var emailField = document.getElementById('email');
+        var phoneField = document.getElementById('phone');
+        var notesField = document.getElementById('notes');
+        
+        if (fullNameField && fullNameField.value) {
+            storedFormData.fullName = fullNameField.value;
+            console.log('Saved name:', fullNameField.value);
+        }
+        if (emailField && emailField.value) {
+            storedFormData.email = emailField.value;
+            console.log('Saved email:', emailField.value);
+        }
+        if (phoneField && phoneField.value) {
+            storedFormData.phone = phoneField.value;
+            console.log('Saved phone:', phoneField.value);
+        }
+        if (notesField && notesField.value) {
+            storedFormData.notes = notesField.value;
+            console.log('Saved notes:', notesField.value);
+        }
+    }
+    
+    function restoreFormData() {
+        console.log('Restoring form data:', storedFormData);
+        
+        // Restore answers
+        var restoredCount = 0;
+        for (var key in storedFormData.answers) {
+            var input = document.querySelector('input[name="answers[' + key + ']"][value="' + storedFormData.answers[key] + '"]');
+            if (input) {
+                input.checked = true;
+                restoredCount++;
+                // Update visual styling for radio button
+                var label = input.closest('.dmr-radio-label');
+                if (label) {
+                    label.classList.add('dmr-radio-checked');
+                }
+            }
+        }
+        console.log('Restored ' + restoredCount + ' answers');
+        
+        // Restore personal info
+        var fullNameField = document.getElementById('full_name');
+        var emailField = document.getElementById('email');
+        var phoneField = document.getElementById('phone');
+        var notesField = document.getElementById('notes');
+        
+        if (fullNameField && storedFormData.fullName) {
+            fullNameField.value = storedFormData.fullName;
+            console.log('Restored name:', storedFormData.fullName);
+        }
+        if (emailField && storedFormData.email) {
+            emailField.value = storedFormData.email;
+            console.log('Restored email:', storedFormData.email);
+        }
+        if (phoneField && storedFormData.phone) {
+            phoneField.value = storedFormData.phone;
+            console.log('Restored phone:', storedFormData.phone);
+        }
+        if (notesField && storedFormData.notes) {
+            notesField.value = storedFormData.notes;
+            console.log('Restored notes:', storedFormData.notes);
+        }
+    }
+    
+    function buildReviewContent() {
+        console.log('=== Building Review Content ===');
+        console.log('Stored Questions:', storedQuestions);
+        console.log('Stored Form Data:', storedFormData);
+        
+        // ALWAYS use stored data since we're on step 3 and the form fields aren't available
+        var answers = {};
+        for (var key in storedFormData.answers) {
+            answers[key] = parseInt(storedFormData.answers[key]);
+        }
+        
+        // Use stored questions
+        var questions = storedQuestions.slice(); // Create a copy
+        
+        // Use stored personal info
+        var fullName = storedFormData.fullName || '';
+        var email = storedFormData.email || '';
+        var phone = storedFormData.phone || '';
+        var notes = storedFormData.notes || '';
+        
+        console.log('Answers count:', Object.keys(answers).length);
+        console.log('Questions count:', questions.length);
         
         // Calculate score
         var reversedItems = [3, 4, 6, 7]; // 0-indexed: 4,5,7,8 become 3,4,6,7
@@ -201,42 +336,90 @@
         
         // Determine category
         var category = 'Moderate Stress';
+        var categoryClass = 'moderate';
         if (score <= 13) {
             category = 'Low Stress';
+            categoryClass = 'low';
         } else if (score >= 27) {
             category = 'High Perceived Stress';
+            categoryClass = 'high';
         }
         
-        // Store in hidden fields for submission
-        storeReviewData(answers, score, category);
-    }
-    
-    function storeReviewData(answers, score, category) {
+        // Check if we have enough data to build review
+        console.log('Validation - Questions:', questions.length, 'Answers:', Object.keys(answers).length);
+        
+        if (questions.length === 0 || Object.keys(answers).length === 0) {
+            var reviewContent = document.getElementById('dmr-review-content');
+            if (reviewContent) {
+                var errorMsg = '<p class="dmr-loading" style="color: #dc3232;">';
+                errorMsg += 'Please complete the previous steps first.<br>';
+                errorMsg += 'Questions: ' + questions.length + '/10<br>';
+                errorMsg += 'Answers: ' + Object.keys(answers).length + '/10<br>';
+                errorMsg += '<button type="button" class="dmr-btn dmr-btn-secondary" onclick="dmrPrevStep(1)" style="margin-top: 15px;">Go Back to Questions</button>';
+                errorMsg += '</p>';
+                reviewContent.innerHTML = errorMsg;
+            }
+            console.error('Not enough data to build review');
+            return;
+        }
+        
+        console.log('Review validation passed, building content...');
+        
+        // Build review content
         var reviewContent = document.getElementById('dmr-review-content');
         if (!reviewContent) return;
         
-        var categoryClass = 'moderate';
-        if (score <= 13) categoryClass = 'low';
-        else if (score >= 27) categoryClass = 'high';
+        var scaleLabels = ['Never', 'Almost Never', 'Sometimes', 'Fairly Often', 'Very Often'];
         
         var html = '<div class="dmr-review-summary">';
+        
+        // User Information Section
+        html += '<div class="dmr-review-section">';
         html += '<h4>Your Information</h4>';
-        html += '<p><strong>Name:</strong> ' + (document.getElementById('full_name') ? document.getElementById('full_name').value : '') + '</p>';
-        html += '<p><strong>Email:</strong> ' + (document.getElementById('email') ? document.getElementById('email').value : '') + '</p>';
-        if (document.getElementById('phone') && document.getElementById('phone').value) {
-            html += '<p><strong>Phone:</strong> ' + document.getElementById('phone').value + '</p>';
+        html += '<div class="dmr-review-info">';
+        html += '<p><strong>Name:</strong> ' + (fullName || 'Not provided') + '</p>';
+        html += '<p><strong>Email:</strong> ' + (email || 'Not provided') + '</p>';
+        if (phone) {
+            html += '<p><strong>Phone:</strong> ' + phone + '</p>';
         }
-        html += '<h4>Your Score</h4>';
-        html += '<div style="text-align: center; padding: 20px; background: #f9f9f9; border-radius: 4px; margin: 15px 0;">';
-        html += '<div style="font-size: 48px; font-weight: bold; color: #0073aa;">' + score + '</div>';
-        html += '<div style="font-size: 14px; color: #666;">out of 40</div>';
-        html += '<div style="margin-top: 10px;"><span style="display: inline-block; padding: 5px 15px; background: ';
-        if (categoryClass === 'low') html += '#46b450';
-        else if (categoryClass === 'moderate') html += '#ffb900';
-        else html += '#dc3232';
-        html += '; color: white; border-radius: 3px;">' + category + '</span></div>';
+        if (notes) {
+            html += '<p><strong>Additional Notes:</strong> ' + notes + '</p>';
+        }
         html += '</div>';
-        html += '<p style="color: #666; font-size: 14px;">You answered ' + Object.keys(answers).length + ' of 10 questions.</p>';
+        html += '</div>';
+        
+        // Questions and Answers Section
+        html += '<div class="dmr-review-section">';
+        html += '<h4>Your Answers</h4>';
+        html += '<div class="dmr-review-questions">';
+        for (var i = 0; i < questions.length; i++) {
+            var answerValue = answers[i] !== undefined ? answers[i] : 'Not answered';
+            var answerLabel = answerValue !== 'Not answered' ? answerValue + ' - ' + scaleLabels[answerValue] : answerValue;
+            
+            html += '<div class="dmr-review-question-item">';
+            html += '<div class="dmr-review-question-number">' + (i + 1) + '.</div>';
+            html += '<div class="dmr-review-question-content">';
+            html += '<div class="dmr-review-question-text">' + questions[i] + '</div>';
+            html += '<div class="dmr-review-answer">';
+            html += '<span class="dmr-review-answer-label">Your Answer:</span> ';
+            html += '<span class="dmr-review-answer-value">' + answerLabel + '</span>';
+            html += '</div>';
+            html += '</div>';
+            html += '</div>';
+        }
+        html += '</div>';
+        html += '</div>';
+        
+        // Score Section
+        html += '<div class="dmr-review-section">';
+        html += '<h4>Your Results</h4>';
+        html += '<div class="dmr-review-score-box">';
+        html += '<div class="dmr-review-score-number">' + score + '</div>';
+        html += '<div class="dmr-review-score-total">/ 40</div>';
+        html += '<div class="dmr-review-category dmr-category-' + categoryClass + '">' + category + '</div>';
+        html += '</div>';
+        html += '</div>';
+        
         html += '</div>';
         
         reviewContent.innerHTML = html;
@@ -399,15 +582,60 @@
         form.appendChild(successMsg);
     }
     
+    // Auto-save form data on input changes
+    var autoSaveInitialized = false;
+    
+    function initAutoSave() {
+        if (autoSaveInitialized) {
+            console.log('Auto-save already initialized');
+            return;
+        }
+        
+        console.log('Initializing auto-save...');
+        
+        // Use event delegation on document since form might be reloaded via AJAX
+        document.addEventListener('change', function(e) {
+            var form = e.target.closest('#dmr-form');
+            if (!form) return;
+            
+            if (e.target.type === 'radio' && e.target.name && e.target.name.indexOf('answers[') === 0) {
+                console.log('Radio button changed:', e.target.name, '=', e.target.value);
+                saveFormData();
+            } else if (e.target.id === 'full_name' || e.target.id === 'email' || e.target.id === 'phone' || e.target.id === 'notes') {
+                console.log('Field changed:', e.target.id);
+                saveFormData();
+            }
+        });
+        
+        // Also save on input events for text fields
+        document.addEventListener('input', function(e) {
+            var form = e.target.closest('#dmr-form');
+            if (!form) return;
+            
+            if (e.target.id === 'full_name' || e.target.id === 'email' || e.target.id === 'phone' || e.target.id === 'notes') {
+                saveFormData();
+            }
+        });
+        
+        autoSaveInitialized = true;
+        console.log('Auto-save initialized');
+    }
+    
     // Initialize on page load
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
             initRadioButtonStyling();
             initFormSubmission();
+            initAutoSave();
+            storeQuestions(); // Store questions on initial load
+            saveFormData(); // Save initial form data
         });
     } else {
         initRadioButtonStyling();
         initFormSubmission();
+        initAutoSave();
+        storeQuestions(); // Store questions on initial load
+        saveFormData(); // Save initial form data
     }
     
 })();
