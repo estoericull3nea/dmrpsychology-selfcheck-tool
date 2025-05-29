@@ -562,12 +562,19 @@
             contentType: false,
             success: function(response) {
                 if (response.success) {
+                    // Set localStorage to prevent modal from showing for 24 hours
+                    var expirationTime = new Date().getTime() + (24 * 60 * 60 * 1000); // 24 hours from now
+                    localStorage.setItem('dmr_submission_success', JSON.stringify({
+                        submitted: true,
+                        expiresAt: expirationTime
+                    }));
+                    
                     // Show success message briefly
                     showSuccessMessage();
                     
-                    // Redirect to results page
+                    // Reload the page after a short delay
                     setTimeout(function() {
-                        window.location.href = response.data.redirect_url;
+                        window.location.reload();
                     }, 1500);
                 } else {
                     hideLoadingState();
