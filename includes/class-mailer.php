@@ -125,12 +125,18 @@ class DMR_Mailer
                 }
 
                 .footer {
-                    background: #f5f5f5;
-                    padding: 20px;
+                    background: linear-gradient(135deg, #e8f5e9 0%, #f1f8f4 100%);
+                    padding: 25px 20px;
                     text-align: center;
                     font-size: 14px;
-                    color: #666;
+                    color: #1b5e20;
                     margin-top: 30px;
+                    border-top: 3px solid #2e7d32;
+                }
+                
+                .footer strong {
+                    color: #2e7d32;
+                    font-size: 16px;
                 }
             </style>
         </head>
@@ -200,60 +206,82 @@ class DMR_Mailer
                 }
 
                 .header {
-                    background: #0073aa;
+                    background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
                     color: white;
-                    padding: 20px;
+                    padding: 30px 20px;
                     text-align: center;
                 }
 
                 .content {
                     background: #f9f9f9;
-                    padding: 20px;
+                    padding: 30px;
                 }
 
                 .section {
-                    margin-bottom: 20px;
+                    margin-bottom: 25px;
                 }
 
                 .section h2 {
-                    color: #0073aa;
-                    border-bottom: 2px solid #0073aa;
-                    padding-bottom: 5px;
+                    color: #2e7d32;
+                    border-bottom: 2px solid #2e7d32;
+                    padding-bottom: 10px;
                 }
 
                 table {
                     width: 100%;
                     border-collapse: collapse;
+                    margin: 15px 0;
                 }
 
                 table td,
                 table th {
-                    padding: 8px;
+                    padding: 10px;
                     text-align: left;
-                    border-bottom: 1px solid #ddd;
+                    border-bottom: 1px solid #e8f5e9;
+                }
+
+                table th {
+                    background: #e8f5e9;
+                    color: #1b5e20;
+                    font-weight: 600;
+                }
+
+                table tr:hover {
+                    background: #f1f8f4;
                 }
 
                 .score-box {
                     background: #fff;
-                    border: 2px solid #0073aa;
-                    padding: 15px;
+                    border: 2px solid #2e7d32;
+                    padding: 25px;
                     text-align: center;
-                    margin: 20px 0;
+                    margin: 25px 0;
+                    border-radius: 8px;
                 }
 
                 .score-number {
                     font-size: 48px;
                     font-weight: bold;
-                    color: #0073aa;
+                    color: #2e7d32;
                 }
 
                 .category {
                     display: inline-block;
-                    padding: 5px 15px;
-                    background: #0073aa;
+                    padding: 8px 20px;
+                    background: #2e7d32;
                     color: white;
-                    border-radius: 3px;
-                    margin-top: 10px;
+                    border-radius: 5px;
+                    margin-top: 15px;
+                    font-size: 18px;
+                    font-weight: 600;
+                }
+
+                .info-box {
+                    background: #e8f5e9;
+                    border-left: 4px solid #2e7d32;
+                    padding: 15px;
+                    margin: 15px 0;
+                    border-radius: 4px;
                 }
             </style>
         </head>
@@ -278,9 +306,7 @@ class DMR_Mailer
                             </tr>
                             <tr>
                                 <td><strong>Email:</strong></td>
-                                <td><a
-                                        href="mailto:<?php echo esc_attr($data['email']); ?>"><?php echo esc_html($data['email']); ?></a>
-                                </td>
+                                <td><a href="mailto:<?php echo esc_attr($data['email']); ?>" style="color: #2e7d32; text-decoration: none; font-weight: 600;"><?php echo esc_html($data['email']); ?></a></td>
                             </tr>
                             <?php if (!empty($data['phone'])): ?>
                                 <tr>
@@ -332,7 +358,7 @@ class DMR_Mailer
 
                     <div class="section">
                         <p><a href="<?php echo admin_url('admin.php?page=dmr-submissions'); ?>"
-                                style="background: #0073aa; color: white; padding: 10px 20px; text-decoration: none; border-radius: 3px; display: inline-block;">View
+                                style="background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%); color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: 600; box-shadow: 0 2px 8px rgba(46, 125, 50, 0.3);">View
                                 in Dashboard</a></p>
                     </div>
                 </div>
