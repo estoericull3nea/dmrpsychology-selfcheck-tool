@@ -61,7 +61,8 @@ function dmr_admin_assets($hook)
 
     wp_localize_script('dmr-admin-js', 'dmrAdmin', array(
         'ajaxurl' => admin_url('admin-ajax.php'),
-        'nonce' => wp_create_nonce('dmr_admin_nonce')
+        'nonce' => wp_create_nonce('dmr_admin_nonce'),
+        'testSmtpNonce' => wp_create_nonce('dmr_test_smtp_nonce')
     ));
 }
 add_action('admin_enqueue_scripts', 'dmr_admin_assets');

@@ -10,6 +10,7 @@ class DMR_Settings
     public function __construct()
     {
         add_action('admin_post_dmr_save_settings', array($this, 'save_settings'));
+        add_action('wp_ajax_dmr_test_smtp', array($this, 'test_smtp'));
     }
 
     public function render_page()
@@ -119,6 +120,14 @@ class DMR_Settings
                             <p class="description">When enabled, emails will be sent via SMTP instead of PHP's mail() function.</p>
                         </td>
                     </tr>
+                    <tr>
+                        <th>Test SMTP</th>
+                        <td>
+                            <button type="button" id="dmr-test-smtp" class="button">Send Test Email</button>
+                            <span id="dmr-smtp-test-result" style="margin-left: 10px;"></span>
+                            <p class="description">Send a test email to verify your SMTP configuration is working correctly. The test email will be sent to your admin email address.</p>
+                        </td>
+                    </tr>
                 </table>
 
                 <h2>Feature Toggles</h2>
@@ -225,5 +234,78 @@ class DMR_Settings
 
         wp_redirect(admin_url('admin.php?page=dmr-settings&saved=1'));
         exit;
+    }
+
+    /**
+     * AJAX handler for testing SMTP configuration
+     */
+    public function test_smtp()
+    {
+        // Check permissions
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(array('message' => 'Unauthorized'));
+            return;
+        }
+
+        // Verify nonce
+        if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'dmr_test_smtp_nonce')) {
+            wp_send_json_error(array('message' => 'Security check failed'));
+            return;
+        }
+
+        $settings = get_option('dmr_settings', array());
+        $defaults = $this->get_defaults();
+        $settings = wp_parse_args($settings, $defaults);
+
+        // Check if SMTP is enabled
+        if (!($settings['smtp_enabled'] ?? false)) {
+            wp_send_json_error(array('message' => 'SMTP is not enabled. Please enable SMTP first.'));
+            return;
+        }
+
+        // Get admin email
+        $admin_email = $settings['admin_email'] ?? get_option('admin_email');
+        
+        if (empty($admin_email)) {
+            wp_send_json_error(array('message' => 'Admin email is not set.'));
+            return;
+        }
+
+        // Send test email
+        $subject = 'DMR Services - SMTP Test Email';
+        $message = '<html><body>';
+        $message .= '<h2>SMTP Test Email</h2>';
+        $message .= '<p>This is a test email from DMR Services plugin.</p>';
+        $message .= '<p>If you received this email, your SMTP configuration is working correctly!</p>';
+        $message .= '<hr>';
+        $message .= '<p><strong>SMTP Configuration:</strong></p>';
+        $message .= '<ul>';
+        $message .= '<li>Host: ' . esc_html($settings['smtp_host'] ?? '') . '</li>';
+        $message .= '<li>Port: ' . esc_html($settings['smtp_port'] ?? '') . '</li>';
+        $message .= '<li>Encryption: ' . esc_html(strtoupper($settings['smtp_encryption'] ?? '')) . '</li>';
+        $message .= '<li>Username: ' . esc_html($settings['smtp_username'] ?? '') . '</li>';
+        $message .= '</ul>';
+        $message .= '<p><small>Sent at: ' . current_time('mysql') . '</small></p>';
+        $message .= '</body></html>';
+
+        $headers = array(
+            'Content-Type: text/html; charset=UTF-8',
+            sprintf('From: %s <%s>', $settings['from_name'] ?? get_bloginfo('name'), $settings['from_email'] ?? get_option('admin_email'))
+        );
+
+        $result = wp_mail($admin_email, $subject, $message, $headers);
+
+        if ($result) {
+            wp_send_json_success(array(
+                'message' => sprintf('Test email sent successfully to %s! Please check your inbox.', $admin_email)
+            ));
+        } else {
+            global $phpmailer;
+            $error_message = 'Failed to send test email.';
+            if (isset($phpmailer) && !empty($phpmailer->ErrorInfo)) {
+                $error_message .= ' Error: ' . $phpmailer->ErrorInfo;
+            }
+            wp_send_json_error(array('message' => $error_message));
+        }
     }
 }
