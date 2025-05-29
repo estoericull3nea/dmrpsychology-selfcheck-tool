@@ -78,3 +78,46 @@ function dmr_public_assets()
     ));
 }
 add_action('wp_enqueue_scripts', 'dmr_public_assets');
+
+// Configure SMTP for PHPMailer
+function dmr_configure_smtp($phpmailer)
+{
+    $settings = get_option('dmr_settings', array());
+    
+    // Only configure if SMTP is enabled
+    if (!($settings['smtp_enabled'] ?? false)) {
+        return;
+    }
+    
+    // Get SMTP settings
+    $smtp_host = $settings['smtp_host'] ?? '';
+    $smtp_port = $settings['smtp_port'] ?? 587;
+    $smtp_encryption = $settings['smtp_encryption'] ?? 'tls';
+    $smtp_username = $settings['smtp_username'] ?? '';
+    $smtp_password = $settings['smtp_password'] ?? '';
+    
+    // Validate required settings
+    if (empty($smtp_host) || empty($smtp_username) || empty($smtp_password)) {
+        return;
+    }
+    
+    // Configure PHPMailer to use SMTP
+    $phpmailer->isSMTP();
+    $phpmailer->Host = $smtp_host;
+    $phpmailer->SMTPAuth = true;
+    $phpmailer->Port = $smtp_port;
+    $phpmailer->Username = $smtp_username;
+    $phpmailer->Password = $smtp_password;
+    
+    // Set encryption
+    if ($smtp_encryption === 'ssl') {
+        $phpmailer->SMTPSecure = 'ssl';
+    } elseif ($smtp_encryption === 'tls') {
+        $phpmailer->SMTPSecure = 'tls';
+    }
+    
+    // Additional settings for better compatibility
+    $phpmailer->SMTPAutoTLS = false;
+    $phpmailer->CharSet = 'UTF-8';
+}
+add_action('phpmailer_init', 'dmr_configure_smtp');
