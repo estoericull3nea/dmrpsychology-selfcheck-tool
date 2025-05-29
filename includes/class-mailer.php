@@ -119,7 +119,6 @@ class DMR_Mailer
                 .thank-you {
                     background: #e8f5e9;
                     padding: 20px;
-                    border-left: 4px solid #2e7d32;
                     margin: 20px 0;
                     border-radius: 4px;
                 }
@@ -144,7 +143,7 @@ class DMR_Mailer
         <body>
             <div class="container">
                 <div class="header">
-                    <h1>Thank You for Your Submission</h1>
+                    <h1 style="color: white; margin: 0;">Thank You for Your Submission</h1>
                 </div>
 
                 <div class="content">
